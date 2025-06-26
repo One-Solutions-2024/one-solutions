@@ -36,6 +36,24 @@ const Navbar = () => {
     setIsMobileMenuOpen(false)
   }
 
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const menu = document.querySelector('.mobile-menu-container')
+      const button = document.querySelector('.mobile-menu-btn')
+
+      if (isMobileMenuOpen && menu && !menu.contains(event.target) &&
+        button && !button.contains(event.target)) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isMobileMenuOpen])
+
   return (
     <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
       <div className="nav-container">
@@ -51,7 +69,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className={`nav-menu ${isMobileMenuOpen ? "active" : ""}`}>
+        <div className="nav-menu">
           {["about", "services", "careers", "contact"].map((section) => (
             <button
               key={section}
@@ -74,12 +92,57 @@ const Navbar = () => {
         <button
           className={`mobile-menu-btn ${isMobileMenuOpen ? "active" : ""}`}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Toggle menu"
         >
           <span></span>
           <span></span>
           <span></span>
         </button>
+
+        {/* Offcanvas Mobile Menu */}
+        <div className={`mobile-menu-container ${isMobileMenuOpen ? "open" : ""}`}>
+          <div className="mobile-menu-header">
+            <div className="mobile-nav-logo" onClick={() => scrollToSection("hero")}>
+              <img
+                src="assets\img\nav_logo.png"
+                alt="One Solutions"
+                className="logo-img"
+              />
+            </div>
+            <div className='close-icon-bg'>
+              <button
+                className="close-btn"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                &times;
+              </button>
+            </div>
+          </div>
+
+          <div className="mobile-menu-content">
+            {["about", "services", "careers", "contact"].map((section) => (
+              <button
+                key={section}
+                className={`mobile-nav-link ${activeSection === section ? "active" : ""}`}
+                onClick={() => scrollToSection(section)}
+              >
+                {section.charAt(0).toUpperCase() + section.slice(1)}
+              </button>
+            ))}
+            <a
+              href="https://onesolutions.onrender.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mobile-nav-link nav-link special"
+            >
+              Job Portal
+            </a>
+          </div>
+        </div>
       </div>
+
+
     </nav>
   )
 }
